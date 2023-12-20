@@ -86,6 +86,9 @@ $(document).ready(function () {
                 "<td>" +
                 '<i class="fa-solid fa-pen-to-square clickable"></i>' +
                 "</td>" +
+                "<td>" +
+                '<i class="fa-solid fa-trash-alt clickable" id="delete-user" ></i>' +
+                "</td>" +
                 '<td class="hidden">' +
                 (row.profile_image ? row.profile_image : "") +
                 "</td>" +
@@ -144,6 +147,9 @@ $(document).ready(function () {
             success: function (data) {
                 if (data && data.length > 0) {
                     fillTable(data);
+                } else {
+                    var table = $("#usersTable");
+                    table.find("tbody").empty();
                 }
             },
             error: function (error) {
@@ -240,13 +246,11 @@ $(document).ready(function () {
     function handleSuccess(response) {
         getData();
         resetForm();
-        userData = response.user;
-
-        var userName = userData.username;
+        const userName = response.user.username;
 
         Swal.fire({
             title: "Success!",
-            text: "User '" + userName + "' saved successfully.",
+            text: `User '${userName}' saved successfully.`,
             icon: "success",
             timer: 4000,
         });
@@ -254,24 +258,27 @@ $(document).ready(function () {
 
     function handleError(error) {
         if (error.responseJSON && error.responseJSON.errors) {
-            var validationErrors = error.responseJSON.errors;
-            var errorEmail;
-            var errorUsername;
-            if (validationErrors.username)
-                errorUsername = validationErrors.username[0];
-            if (validationErrors.email) errorEmail = validationErrors.email[0];
+            const validationErrors = error.responseJSON.errors;
+            const errorEmail = validationErrors.email
+                ? validationErrors.email[0]
+                : "";
+            const errorUsername = validationErrors.username
+                ? validationErrors.username[0]
+                : "";
 
+            let errorMessage = "";
             if (errorUsername && errorEmail) {
-                showSwalError(
-                    "The user and email exist, please correct the fields"
-                );
+                errorMessage =
+                    "The user and email exist, please correct the fields";
             } else if (errorUsername) {
-                showSwalError("The user exists, please correct the field");
+                errorMessage = "The user exists, please correct the field";
             } else {
-                showSwalError("The email exists, please correct the field");
+                errorMessage = "The email exists, please correct the field";
             }
+
+            showSwalError(errorMessage);
         } else {
-            showSwalError("The server does not respond");
+            showSwalError("An error occurred. The server did not respond.");
         }
     }
 
@@ -287,15 +294,12 @@ $(document).ready(function () {
                 showCancelButton: false,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                },
+                willOpen: () => Swal.showLoading(),
             });
 
-            var route = baseUrl("users");
-            var token = $("#token").val();
-
-            var formData = new FormData(this);
+            const route = baseUrl("users");
+            const token = $("#token").val();
+            const formData = new FormData(this);
 
             $.ajax({
                 url: route,
@@ -309,5 +313,44 @@ $(document).ready(function () {
                 error: handleError,
             });
         }
+    });
+
+    $("#usersTable").on("click", "#delete-user", function () {
+        var fila = $(this).closest("tr");
+        var idUsuario = fila.find("td:eq(0)").text();
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this user!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var route = baseUrl("users") + "/" + idUsuario;
+                var token = $("#token").val();
+
+                $.ajax({
+                    url: route,
+                    headers: { "X-CSRF-TOKEN": token },
+                    type: "DELETE",
+                    dataType: "json",
+                    success: function (response) {
+                        Swal.fire(
+                            "Deleted!",
+                            "The user has been deleted.",
+                            "success"
+                        );
+                        getData();
+                    },
+                    error: function (error) {
+                        showSwalError("Unable to delete the user.");
+                    },
+                });
+            }
+        });
     });
 });

@@ -1,1 +1,56 @@
+body {
+    background-color: #f3f0f06e;
+}
 
+.pt-m {
+    padding-top: 64px !important;
+}
+
+.rounded-container {
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+.rounded-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.underline-blue {
+    border-bottom: 3px solid #007bff;
+    padding-bottom: 4px;
+}
+
+.form-group {
+    padding: 16px 0px 16px;
+}
+
+.form-group label {
+    font-size: 14px;
+    padding-bottom: 8px;
+    font-weight: 400;
+}
+
+::placeholder {
+    opacity: 0.6 !important;
+}
+
+.input-group-append span {
+    background-color: transparent !important;
+}
+
+.input-group-prepend span {
+    background-color: transparent !important;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}

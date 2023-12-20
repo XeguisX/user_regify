@@ -14,6 +14,8 @@
           return '{{url('')}}/' + url;
         }
     </script>
+
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}"></script>
 
 
@@ -23,65 +25,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous">
     </script>
-
-    <style>
-        body {
-            background-color: #f3f0f06e;
-        }
-
-        .pt-m {
-            padding-top: 64px !important;
-        }
-
-        .rounded-container {
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-        }
-
-        .rounded-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .underline-blue {
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 4px;
-        }
-
-        .form-group {
-            padding: 16px 0px 16px;
-        }
-
-        .form-group label {
-            font-size: 14px;
-            padding-bottom: 8px;
-            font-weight: 400;
-        }
-
-        ::placeholder {
-            opacity: 0.6 !important;
-        }
-
-        .input-group-append span {
-            background-color: transparent !important;
-        }
-
-        .input-group-prepend span {
-            background-color: transparent !important;
-        }
-
-        .clickable:hover {
-            cursor: pointer;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
 
 </head>
 
@@ -108,11 +51,11 @@
                                 </div>
 
                                 <div style="padding-top: 16px"></div>
-                                <label for="imageFile" class="btn btn-primary" style="color: #f1f4fd; font-weight: 600">
+                                <label for="imageFile" class="btn btn-danger" style="color: #f1f4fd; font-weight: 600">
                                     Upload New Photo <input class="form-control" type="file" id="imageFile"
                                         name="imageFile" style="display: none;">
                                 </label>
-                                <button id="removeImageBtn" class="btn btn-danger" style="display: none;">
+                                <button id="removeImageBtn" class="btn btn-warning" style="display: none;">
                                     <i class="fas fa-trash"></i>
                                 </button>
 
@@ -252,10 +195,10 @@
                                     </div>
                                 </div>
                                 <div style="padding-top: 16px"></div>
-                                <button type="submit" class="btn btn-success" id="saveUser">
-                                    <i class="fa fa-save"></i> - Save
+                                <button type="submit" class="btn btn-danger" id="saveUser" style="font-weight: 600">
+                                    Save Info
                                 </button>
-                                <button type="button" class="btn btn-danger" id="cancelUpdate" style="display: none"
+                                <button type="button" class="btn btn-warning" id="cancelUpdate" style="display: none"
                                     onclick="resetForm()">
                                     <i class="fa-solid fa-xmark"></i> Cancelar
                                 </button>
@@ -297,6 +240,9 @@
                                         </th>
                                         <th scope="col">
                                             <i class="fa-brands fa-twitter" style="padding: 4"></i>
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fa-solid fa-ellipsis"></i>
                                         </th>
                                         <th scope="col">
                                             <i class="fa-solid fa-ellipsis"></i>
