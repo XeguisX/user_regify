@@ -1,4 +1,159 @@
+function resetPasswordFields() {
+    $("#password").attr("type", "password");
+    $("#confirmPassword").attr("type", "password");
+    $("#icon-password").removeClass("fa-eye").addClass("fa-eye-slash");
+    $("#icon-confirm-password").removeClass("fa-eye").addClass("fa-eye-slash");
+}
+
+function removeImageBtn() {
+    $("#userImage").attr(
+        "src",
+        "https://static.vecteezy.com/system/resources/thumbnails/005/346/410/small_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg"
+    );
+    $("#removeImageBtn").hide();
+    $("#imageFile").val("");
+}
+
+function resetForm() {
+    $("#userForm")[0].reset();
+    $("#cancelUpdate").hide();
+    $("#member_since").text("---");
+    $("#username_title").text("@james");
+    $("#full_name_title").text("Jamed Allan");
+    resetPasswordFields();
+    removeImageBtn();
+}
+
+function togglePassword(inputId, icon) {
+    const passwordInput = $("#" + inputId);
+    const passwordIcon = $("#" + icon);
+
+    if (passwordInput.attr("type") === "password") {
+        passwordInput.attr("type", "text");
+        passwordIcon.removeClass("fa-eye-slash").addClass("fa-eye");
+    } else {
+        passwordInput.attr("type", "password");
+        passwordIcon.removeClass("fa-eye").addClass("fa-eye-slash");
+    }
+}
+
+function formatDate(date) {
+    var date = new Date(date);
+    var monthInitials = date
+        .toLocaleString("es", { month: "short" })
+        .toUpperCase();
+    var formatDate =
+        date.getDate() + " - " + monthInitials + " - " + date.getFullYear();
+
+    return formatDate;
+}
+
 $(document).ready(function () {
+    function fillTable(data) {
+        var table = $("#usersTable");
+
+        table.find("tbody").empty();
+
+        data.forEach(function (row) {
+            var formattedDate = formatDate(row.created_at);
+
+            var newRow =
+                "<tr>" +
+                "<td>" +
+                row.id +
+                "</td>" +
+                "<td>" +
+                row.username +
+                "</td>" +
+                "<td>" +
+                row.full_name +
+                "</td>" +
+                "<td>" +
+                row.email +
+                "</td>" +
+                "<td>" +
+                formattedDate +
+                "</td>" +
+                "<td>" +
+                (row.facebook_username
+                    ? row.facebook_username
+                    : '<i class="fa-solid fa-minus"></i>') +
+                "<td>" +
+                (row.twitter_username
+                    ? row.twitter_username
+                    : '<i class="fa-solid fa-minus"></i>') +
+                "</td>" +
+                "<td>" +
+                '<i class="fa-solid fa-pen-to-square clickable"></i>' +
+                "</td>" +
+                '<td class="hidden">' +
+                (row.profile_image ? row.profile_image : "") +
+                "</td>" +
+                "</tr>";
+
+            table.find("tbody").append(newRow);
+        });
+    }
+
+    $("#usersTable").on("click", ".fa-pen-to-square", function () {
+        var fila = $(this).closest("tr");
+
+        var idUsuario = fila.find("td:eq(0)").text();
+        var username = fila.find("td:eq(1)").text();
+        var fullName = fila.find("td:eq(2)").text();
+        var email = fila.find("td:eq(3)").text();
+        var member_since = fila.find("td:eq(4)").text();
+        var facebook_username = fila.find("td:eq(5)").text();
+        var twitter_username = fila.find("td:eq(6)").text();
+        var path_image = fila.find("td:hidden").text();
+
+        $("#userForm")[0].reset();
+        $("#user_id").val(idUsuario);
+        $("#username").val(username);
+        $("#username_title").text("@".username);
+        $("#full_name").val(fullName);
+        $("#full_name_title").text(fullName);
+        $("#email").val(email);
+        $("#confirmEmail").val(email);
+        $("#member_since").text(member_since);
+        $("#facebook_username").val(facebook_username);
+        $("#twitter_username").val(twitter_username);
+
+        if (path_image) {
+            $("#userImage").attr("src", path_image);
+        } else {
+            $("#userImage").attr(
+                "src",
+                "https://static.vecteezy.com/system/resources/thumbnails/005/346/410/small_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg"
+            );
+        }
+
+        $("#cancelUpdate").show();
+
+        var posicion = $("#pt-m").offset().top;
+        $("html, body").animate({ scrollTop: posicion }, "slow");
+    });
+
+    function getData() {
+        var routeGetuser = baseUrl("users");
+
+        $.ajax({
+            url: routeGetuser,
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data && data.length > 0) {
+                    fillTable(data);
+                }
+            },
+            error: function (error) {
+                console.error("Error fetching data:", error);
+            },
+        });
+    }
+
+    getData();
+
     $("#imageFile").change(function () {
         var input = this;
         var url = URL.createObjectURL(input.files[0]);
@@ -19,15 +174,6 @@ $(document).ready(function () {
             removeImageBtn();
         }
     });
-
-    function removeImageBtn() {
-        $("#userImage").attr(
-            "src",
-            "https://static.vecteezy.com/system/resources/thumbnails/005/346/410/small_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg"
-        );
-        $("#removeImageBtn").hide();
-        $("#imageFile").val("");
-    }
 
     $("#removeImageBtn").click(function () {
         removeImageBtn();
@@ -66,116 +212,102 @@ $(document).ready(function () {
         }
     }
 
-    $("#userForm").submit(function () {
-        $("#password").attr("type", "password");
-        $("#confirmPassword").attr("type", "password");
+    $("#confirmEmail").on("input", function () {
+        validateEmails();
     });
 
-    function disabledSubmit() {
-        if (isValidateEmail && isValidatePassword) {
-            $("#saveUser").prop("disabled", false);
+    $("#email").on("input", function () {
+        validateEmails();
+    });
+
+    $("#password").on("input", function () {
+        validatePasswords();
+    });
+
+    $("#confirmPassword").on("input", function () {
+        validatePasswords();
+    });
+
+    function showSwalError(message) {
+        Swal.fire({
+            icon: "error",
+            title: "An error has occurred...",
+            timer: 4000,
+            text: message,
+        });
+    }
+
+    function handleSuccess(response) {
+        getData();
+        resetForm();
+        userData = response.user;
+
+        var userName = userData.username;
+
+        Swal.fire({
+            title: "Success!",
+            text: "User '" + userName + "' saved successfully.",
+            icon: "success",
+            timer: 4000,
+        });
+    }
+
+    function handleError(error) {
+        if (error.responseJSON && error.responseJSON.errors) {
+            var validationErrors = error.responseJSON.errors;
+            var errorEmail;
+            var errorUsername;
+            if (validationErrors.username)
+                errorUsername = validationErrors.username[0];
+            if (validationErrors.email) errorEmail = validationErrors.email[0];
+
+            if (errorUsername && errorEmail) {
+                showSwalError(
+                    "The user and email exist, please correct the fields"
+                );
+            } else if (errorUsername) {
+                showSwalError("The user exists, please correct the field");
+            } else {
+                showSwalError("The email exists, please correct the field");
+            }
         } else {
-            $("#saveUser").prop("disabled", true);
+            showSwalError("The server does not respond");
         }
     }
 
-    $("#confirmEmail").blur(function () {
-        validateEmails();
-        disabledSubmit();
-    });
-
-    $("#email").blur(function () {
-        validateEmails();
-        disabledSubmit();
-    });
-
-    $("#password").blur(function () {
-        validatePasswords();
-        disabledSubmit();
-    });
-
-    $("#confirmPassword").blur(function () {
-        validatePasswords();
-        disabledSubmit();
-    });
-
     $("#userForm").submit(function (event) {
         event.preventDefault();
-        var route = baseUrl("users");
-        var token = $("#token").val();
+        validateEmails();
+        validatePasswords();
+        if (isValidateEmail && isValidatePassword) {
+            Swal.fire({
+                title: "Loading...",
+                text: "Please wait",
+                icon: "info",
+                showCancelButton: false,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                },
+            });
 
-        var formData = new FormData(this);
+            var route = baseUrl("users");
+            var token = $("#token").val();
 
-        $.ajax({
-            url: route,
-            headers: { "X-CSRF-TOKEN": token },
-            type: "POST",
-            data: formData,
-            dataType: "json",
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                $("#userForm")[0].reset();
-                removeImageBtn();
+            var formData = new FormData(this);
 
-                var userName = response.user.username;
-
-                Swal.fire({
-                    title: "Success!",
-                    text: "User '" + userName + "' created successfully.",
-                    icon: "success",
-                });
-            },
-            error: function (error) {
-                if (error.responseJSON && error.responseJSON.errors) {
-                    var validationErrors = error.responseJSON.errors;
-                    var errorEmail;
-                    var errorUsername;
-                    if (validationErrors.username)
-                        errorUsername = validationErrors.username[0];
-                    if (validationErrors.email)
-                        errorEmail = validationErrors.email[0];
-
-                    if (errorUsername && errorEmail) {
-                        Swal.fire({
-                            icon: "error",
-                            title: "An error has occurred...",
-                            text: "The user and email exist, please correct the fields",
-                        });
-                    } else if (errorUsername) {
-                        Swal.fire({
-                            icon: "error",
-                            title: "An error has occurred...",
-                            text: "The user exist, please correct the field",
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "An error has occurred...",
-                            text: "The email exist, please correct the field",
-                        });
-                    }
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "An error has occurred...",
-                        text: "The server does not respond",
-                    });
-                }
-            },
-        });
+            $.ajax({
+                url: route,
+                headers: { "X-CSRF-TOKEN": token },
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                contentType: false,
+                processData: false,
+                success: handleSuccess,
+                error: handleError,
+            });
+        }
     });
 });
-
-function togglePassword(inputId, icon) {
-    const passwordInput = $("#" + inputId);
-    const passwordIcon = $("#" + icon);
-
-    if (passwordInput.attr("type") === "password") {
-        passwordInput.attr("type", "text");
-        passwordIcon.removeClass("fa-eye-slash").addClass("fa-eye");
-    } else {
-        passwordInput.attr("type", "password");
-        passwordIcon.removeClass("fa-eye").addClass("fa-eye-slash");
-    }
-}

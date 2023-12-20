@@ -73,24 +73,31 @@
         .input-group-prepend span {
             background-color: transparent !important;
         }
+
+        .clickable:hover {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 
 </head>
 
 <body>
     <div class="container-fluid">
-        <div class="pt-m"></div>
+        <div class="pt-m" id="pt-m"></div>
         <form id="userForm" enctype="multipart/form-data">
 
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-3">
-
                     <div class="card shadow border-0">
                         <div class="card-body">
                             <center>
-                                <h3>Jamed Allan</h3>
-                                <span>@james</span>
+                                <h3 id="full_name_title">Jamed Allan</h3>
+                                <span id="username_title">@james</span>
 
                                 <div style="padding-top: 8px;">
                                     <div class="rounded-container" id="imageContainer">
@@ -120,12 +127,12 @@
                                 </div>
 
                                 <div style="padding-top: 16px"></div>
-                                <p>Member Since: <strong>29 September 2019</strong></p>
+                                <p>Member Since: <strong id="member_since">---</strong></p>
+
 
                             </center>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-md-5">
                     <div class="card shadow border-0">
@@ -144,6 +151,10 @@
                                 <input type="hidden" name="_token" value="{{csrf_token()}}" id="token">
                                 <div class="row">
                                     <div class="col-md-6">
+                                        <div class="form-group" style="display: none">
+                                            <label for="user_id">ID</label>
+                                            <input type="text" class="form-control" id="user_id" name="user_id">
+                                        </div>
                                         <div class="form-group">
                                             <label for="full_name">Full Name</label>
                                             <input type="text" class="form-control" id="full_name" name="full_name"
@@ -155,7 +166,7 @@
                                             <div class="input-group">
                                                 <input type="password" class="form-control" name="password"
                                                     id="password" placeholder="Enter your password" required>
-                                                <div class="input-group-append"
+                                                <div class="clickable input-group-append"
                                                     onclick="togglePassword('password', 'icon-password')">
                                                     <span class="input-group-text">
                                                         <i class="fa-solid fa-eye-slash" id="icon-password"
@@ -186,7 +197,7 @@
                                             <div class="input-group">
                                                 <input type="password" class="form-control" id="confirmPassword"
                                                     placeholder="Confirm your password" required>
-                                                <div class="input-group-append"
+                                                <div class="clickable input-group-append"
                                                     onclick="togglePassword('confirmPassword', 'icon-confirm-password')">
                                                     <span class="input-group-text">
                                                         <i class="fa-solid fa-eye-slash" id="icon-confirm-password"
@@ -200,7 +211,7 @@
                                         <div class="form-group">
                                             <label for="confirmEmail">Confirm Email Address</label>
                                             <input type="email" class="form-control" id="confirmEmail"
-                                                placeholder="Confirm your email address" required>
+                                                name="confirmEmail" placeholder="Confirm your email address" required>
                                             <div id="confirmationEmailError" class="text-danger"></div>
                                         </div>
                                     </div>
@@ -244,6 +255,10 @@
                                 <button type="submit" class="btn btn-success" id="saveUser">
                                     <i class="fa fa-save"></i> - Save
                                 </button>
+                                <button type="button" class="btn btn-danger" id="cancelUpdate" style="display: none"
+                                    onclick="resetForm()">
+                                    <i class="fa-solid fa-xmark"></i> Cancelar
+                                </button>
 
 
 
@@ -252,10 +267,59 @@
                     </div>
                 </div>
                 <div class="col-md-2"></div>
-
-
             </div>
         </form>
+
+        <div class="pt-m"></div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="card shadow border-0">
+                    <div class="card-header border-0">
+                        <div style="padding: 24px 24px 0px;">
+                            <h2>Registered Users</h2>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Full Name</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Member Since</th>
+                                        <th scope="col">
+                                            <i class="fa-brands fa-facebook" style="padding: 4"></i>
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fa-brands fa-twitter" style="padding: 4"></i>
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fa-solid fa-ellipsis"></i>
+                                        </th>
+                                        <th class="hidden" scope="col">
+                                            image
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="pt-m"></div>
+
+
+    </div>
 
 </body>
 
