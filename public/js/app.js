@@ -113,7 +113,7 @@ $(document).ready(function () {
         $("#userForm")[0].reset();
         $("#user_id").val(idUsuario);
         $("#username").val(username);
-        $("#username_title").text("@".username);
+        $("#username_title").text("@" + username);
         $("#full_name").val(fullName);
         $("#full_name_title").text(fullName);
         $("#email").val(email);
