@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('username');
             $table->string('password');
             $table->string('email');
-            $table->string('confirm_password');
-            $table->string('confirm_email');
             $table->string('facebook_username')->nullable();
             $table->string('twitter_username')->nullable();
             $table->string('profile_image')->nullable();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -28,20 +29,38 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'full_name' => 'required',
-            'username' => 'required|unique:users',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Reglas de validación para la imagen
-        ]);
+        try {
+            $data = $request->validate([
+                'full_name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users',
+                'password' => 'required|string',
+                'email' => 'required|email|max:255|unique:users',
+            ]);
 
-        if ($request->hasFile('profile_image')) {
-            $imagePath = $request->file('profile_image')->store('user_images');
-            $data['profile_image'] = $imagePath;
+            if ($request->hasFile('imageFile')) {
+                $image = $request->file('imageFile');
+                $imageName = 'profile_' . time() . '.' . $image->getClientOriginalExtension();
+                $imagePath = $image->storeAs('public', $imageName);
+            } else {
+                $imagePath = null;
+            }
+
+            $user = User::create([
+                'full_name' => $data['full_name'],
+                'username' => $data['username'],
+                'password' => bcrypt($data['password']),
+                'email' => $data['email'],
+                'profile_image' => $imagePath,
+                'facebook_username' => $request['facebook_username'] ?? null,
+                'twitter_username' => $request['twitter_username'] ?? null,
+            ]);
+
+            return response()->json(['result' => 'success', 'user' => $user], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['result' => 'Validation failed', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['result' => 'Error creating user', 'message' => $e->getMessage()], 500);
         }
-
-        User::create($data);
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
     /**
      * Display the specified resource.

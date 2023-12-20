@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('users', UserController::class);
+Route::post('/upload-image', 'UserController@uploadImage')->name('upload.image');

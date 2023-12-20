@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Laravel</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function baseUrl(url){
+          return '{{url('')}}/' + url;
+        }
+    </script>
+    <script src="{{ asset('js/app.js') }}"></script>
+
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -13,7 +23,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous">
     </script>
-
 
     <style>
         body {
@@ -71,69 +80,81 @@
 <body>
     <div class="container-fluid">
         <div class="pt-m"></div>
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-3">
+        <form id="userForm" enctype="multipart/form-data">
 
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <center>
-                            <h3>Jamed Allan</h3>
-                            <span>@james</span>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3">
 
-                            <div style="padding-top: 8px"></div>
-                            <div class="rounded-container">
-                                <img src="https://static.vecteezy.com/system/resources/thumbnails/005/346/410/small_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg"
-                                    alt="Descripción de la imagen">
-                            </div>
+                    <div class="card shadow border-0">
+                        <div class="card-body">
+                            <center>
+                                <h3>Jamed Allan</h3>
+                                <span>@james</span>
 
-                            <div style="padding-top: 16px"></div>
-                            <button type="button" class="btn btn-danger">Upload New Photo</button>
-
-                            <div style="padding-top: 16px"></div>
-                            <div class="card card-border-rounded" style="background-color: #f1f4fd; border-radius: 4%">
-                                <div class="card-body">
-                                    <p>Upload a new avatar, Larger image will be resized automatically.</p>
-                                    <p>Maximum upload size is <strong>1 MB</strong></p>
+                                <div style="padding-top: 8px;">
+                                    <div class="rounded-container" id="imageContainer">
+                                        <img id="userImage"
+                                            src="https://static.vecteezy.com/system/resources/thumbnails/005/346/410/small_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg"
+                                            alt="Descripción de la imagen">
+                                    </div>
                                 </div>
+
+                                <div style="padding-top: 16px"></div>
+                                <label for="imageFile" class="btn btn-primary" style="color: #f1f4fd; font-weight: 600">
+                                    Upload New Photo <input class="form-control" type="file" id="imageFile"
+                                        name="imageFile" style="display: none;">
+                                </label>
+                                <button id="removeImageBtn" class="btn btn-danger" style="display: none;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+
+                                <div style="padding-top: 16px"></div>
+                                <div class="card card-border-rounded"
+                                    style="background-color: #f1f4fd; border-radius: 4%">
+                                    <div class="card-body">
+                                        <p>Upload a new avatar, Larger image will be resized automatically.</p>
+                                        <p>Maximum upload size is <strong>1 MB</strong></p>
+                                    </div>
+                                </div>
+
+                                <div style="padding-top: 16px"></div>
+                                <p>Member Since: <strong>29 September 2019</strong></p>
+
+                            </center>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-5">
+                    <div class="card shadow border-0">
+                        <div class="card-header border-0">
+                            <div style="padding: 24px 24px 0px;">
+                                <h2>Edit Profile</h2>
+
+                                <div style="padding-top: 16px"></div>
+
+                                <span class="underline-blue">&nbsp; User info &nbsp;</span>
                             </div>
 
-                            <div style="padding-top: 16px"></div>
-                            <p>Member Since: <strong>29 September 2019</strong></p>
-
-                        </center>
-                    </div>
-                </div>
-
-            </div>
-            <div class="col-md-5">
-                <div class="card shadow border-0">
-                    <div class="card-header border-0">
-                        <div style="padding: 24px 24px 0px;">
-                            <h2>Edit Profile</h2>
-
-                            <div style="padding-top: 16px"></div>
-
-                            <span class="underline-blue">&nbsp; User info &nbsp;</span>
                         </div>
-
-                    </div>
-                    <div class="card-body">
-                        <div style="padding: 8px 24px 0px;">
-                            <form id="userForm">
+                        <div class="card-body">
+                            <div style="padding: 8px 24px 0px;">
+                                <input type="hidden" name="_token" value="{{csrf_token()}}" id="token">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="fullName">Full Name</label>
-                                            <input type="text" class="form-control" id="fullName"
+                                            <label for="full_name">Full Name</label>
+                                            <input type="text" class="form-control" id="full_name" name="full_name"
                                                 placeholder="Enter your full name" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="password">Password</label>
                                             <div class="input-group">
-                                                <input type="password" class="form-control" id="password"
-                                                    placeholder="Enter your password" required>
+                                                <input type="password" class="form-control" name="password"
+                                                    id="password" placeholder="Enter your password" required>
                                                 <div class="input-group-append"
                                                     onclick="togglePassword('password', 'icon-password')">
                                                     <span class="input-group-text">
@@ -147,7 +168,7 @@
 
                                         <div class="form-group">
                                             <label for="email">Email Address</label>
-                                            <input type="email" class="form-control" id="email"
+                                            <input type="email" class="form-control" name="email" id="email"
                                                 placeholder="Enter your email address" required>
                                             <div id="emailError" class="text-danger"></div>
                                         </div>
@@ -156,7 +177,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="username">Username</label>
-                                            <input type="text" class="form-control" id="username"
+                                            <input type="text" class="form-control" name="username" id="username"
                                                 placeholder="Choose a username" required>
                                         </div>
 
@@ -198,8 +219,8 @@
                                                         <i class="fa-brands fa-facebook" style="padding: 4"></i>
                                                     </span>
                                                 </div>
-                                                <input type="text" class="form-control" id="facebook-username"
-                                                    placeholder="Facebook Username">
+                                                <input type="text" class="form-control" name="facebook_username"
+                                                    id="facebook_username" placeholder="Facebook Username">
 
                                             </div>
                                         </div>
@@ -212,29 +233,31 @@
                                                         <i class="fa-brands fa-twitter" style="padding: 4"></i>
                                                     </span>
                                                 </div>
-                                                <input type="text" class="form-control" id="twitter-username"
-                                                    placeholder="Twitter Username">
+                                                <input type="text" class="form-control" name="twitter_username"
+                                                    id="twitter_username" placeholder="Twitter Username">
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div style="padding-top: 16px"></div>
-                                <button type="submit" class="btn btn-danger" id="updateInfoButton">Update Info</button>
-                            </form>
+                                <button type="submit" class="btn btn-success" id="saveUser">
+                                    <i class="fa fa-save"></i> - Save
+                                </button>
+
+
+
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-2"></div>
+
+
             </div>
-            <div class="col-md-2"></div>
-
-
-        </div>
-
+        </form>
 
 </body>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="{{ asset('js/user-management.js') }}"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
